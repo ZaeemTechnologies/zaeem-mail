@@ -23,7 +23,7 @@ jobs:
         run: ./gradlew :app-k9mail:assembleDebug -Pminify=false --no-daemon
       - name: Checksum
         run: |
-          mkdir out; cp upstream/app-k9mail/build/outputs/apk/debug/*.apk out/
+          mkdir out; find upstream/app-k9mail/build/outputs -name \*.apk -exec cp {} out/ \;
           (cd out && sha256sum *.apk | tee SHA256SUMS.txt)
       - uses: actions/upload-artifact@v4
         with: { name: zaeem-mail-debug-apk, path: out/ }
