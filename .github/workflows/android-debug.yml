@@ -15,6 +15,7 @@ jobs:
       - uses: actions/setup-java@v4
         with: { distribution: temurin, java-version: "21" }
       - uses: android-actions/setup-android@v3
+        with: { packages: '' }
       - name: Rebrand
         run: bash scripts/rebrand.sh upstream
       - name: Build debug APK
