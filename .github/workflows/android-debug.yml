@@ -1,0 +1,28 @@
+name: Android debug build (internal test)
+on: { workflow_dispatch: {} }
+permissions: { contents: read }
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: thunderbird/thunderbird-android
+          ref: 2d881297d9005af4d8035d382f078d07aaa0e079
+          path: upstream
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: "21" }
+      - uses: android-actions/setup-android@v3
+      - name: Rebrand
+        run: bash scripts/rebrand.sh upstream
+      - name: Build debug APK
+        working-directory: upstream
+        run: ./gradlew :app-k9mail:assembleDebug -Pminify=false --no-daemon
+      - name: Checksum
+        run: |
+          mkdir out; cp upstream/app-k9mail/build/outputs/apk/debug/*.apk out/
+          (cd out && sha256sum *.apk | tee SHA256SUMS.txt)
+      - uses: actions/upload-artifact@v4
+        with: { name: zaeem-mail-debug-apk, path: out/ }
